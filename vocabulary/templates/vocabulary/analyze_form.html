@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Аналіз тексту</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2>Аналізатор тексту</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Назва (напр. Глава 1)</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ваш текст англійською</label>
+                        <textarea name="text" class="form-control" rows="8" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Проаналізувати</button>
+                    <a href="{% url 'word_list' %}" class="btn btn-link">Назад до списку</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

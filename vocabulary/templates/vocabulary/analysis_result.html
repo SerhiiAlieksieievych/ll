@@ -1,0 +1,73 @@
+<div class="container mt-5">
+    <h2>Словник тексту: {{ analysis.title }}</h2>
+
+    <form method="post" action="{% url 'save_selected_words' %}" id="wordsForm">
+        {% csrf_token %}
+        <table class="table table-striped shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width: 50px;"><input type="checkbox" id="selectAll"></th>
+                    <th>Слово (En)</th>
+                    <th>Повторів</th>
+                    <th>Переклад (Ua)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for word, count in word_data.items %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="selected_words" value="{{ word }}" class="word-checkbox">
+                    </td>
+                    <td><strong>{{ word }}</strong></td>
+                    <td><span class="badge bg-secondary">{{ count }}</span></td>
+                    <td>
+                        <input type="text" name="translation_{{ word }}"
+                               class="form-control form-control-sm translation-input"
+                               placeholder="Введіть переклад">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="sticky-bottom bg-white p-3 border-top shadow">
+            <button type="submit" class="btn btn-success" id="saveButton" disabled>
+                Додати обрані в мій словник
+            </button>
+            <a href="{% url 'word_list' %}" class="btn btn-outline-secondary">Скасувати</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    const checkboxes = document.querySelectorAll('.word-checkbox');
+    const inputs = document.querySelectorAll('.translation-input');
+    const saveButton = document.getElementById('saveButton');
+
+    // Функція валідації: кнопка активна, тільки якщо у вибраних слів є переклад
+    function validateForm() {
+        let anySelected = false;
+        let allTranslationsFilled = true;
+
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                anySelected = true;
+                const input = document.querySelector(`input[name="translation_${cb.value}"]`);
+                if (!input.value.trim()) {
+                    allTranslationsFilled = false;
+                }
+            }
+        });
+
+        saveButton.disabled = !(anySelected && allTranslationsFilled);
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', validateForm));
+    inputs.forEach(input => input.addEventListener('input', validateForm));
+
+    // Вибрати всі
+    document.getElementById('selectAll').addEventListener('change', function() {
+        checkboxes.forEach(cb => cb.checked = this.checked);
+        validateForm();
+    });
+</script>
