@@ -1,51 +1,97 @@
-<div class="container mt-5">
-    <h2>Словник тексту: {{ analysis.title }}</h2>
+{% extends 'base.html' %}
 
-    <form method="post" action="{% url 'save_selected_words' %}" id="wordsForm">
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Результати аналізу: {{ title }}</h2>
+
+    {% if is_temp %}
+    <form action="{% url 'save_analysis' %}" method="post">
         {% csrf_token %}
-        <table class="table table-striped shadow-sm">
-            <thead class="table-dark">
-                <tr>
-                    <th style="width: 50px;"><input type="checkbox" id="selectAll"></th>
-                    <th>Слово (En)</th>
-                    <th>Повторів</th>
-                    <th>Переклад (Ua)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for word, count in word_data.items %}
-                <tr>
-                    <td>
-                        <input type="checkbox" name="selected_words" value="{{ word }}" class="word-checkbox">
-                    </td>
-                    <td><strong>{{ word }}</strong></td>
-                    <td><span class="badge bg-secondary">{{ count }}</span></td>
-                    <td>
-                        <input type="text" name="translation_{{ word }}"
-                               class="form-control form-control-sm translation-input"
-                               placeholder="Введіть переклад">
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <div class="sticky-bottom bg-white p-3 border-top shadow">
-            <button type="submit" class="btn btn-success" id="saveButton" disabled>
-                Додати обрані в мій словник
-            </button>
-            <a href="{% url 'word_list' %}" class="btn btn-outline-secondary">Скасувати</a>
-        </div>
+        <input type="hidden" name="title" value="{{ title }}">
+        <input type="hidden" name="text" value="{{ raw_text }}">
+        <button type="submit" class="btn btn-success">⭐ Зберегти текст у бібліотеку</button>
     </form>
+    {% endif %}
 </div>
 
-<script>
-    const checkboxes = document.querySelectorAll('.word-checkbox');
-    const inputs = document.querySelectorAll('.translation-input');
-    const saveButton = document.getElementById('saveButton');
+<form action="{% url 'save_selected_words' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="analysis_id" value="{{ analysis.id|default:'' }}">
 
-    // Функція валідації: кнопка активна, тільки якщо у вибраних слів є переклад
+            <table class="table table-striped shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 50px;"><input type="checkbox" id="selectAll"></th>
+                        <th>Слово (En)</th>
+                        <th>Повторів</th>
+                        <th>Переклад (Ua)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in page_obj %}
+                        <tr>
+                            <td><input type="checkbox" name="selected_words" value="{{ item.word }}" class="word-checkbox"></td>
+                            <td>{{ item.word }}</td>
+                            <td>{{ item.count }}</td>
+                            <td>
+                                <input type="text" name="translation_{{ item.word }}" class="form-control form-control-sm translation-input" placeholder="Переклад">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1">&laquo; Перша</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a></li>
+                    {% endif %}
+
+                    <li class="page-item disabled"><span class="page-link">Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span></li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Остання &raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <hr class="my-5">
+            <div class="text-center mb-5">
+                <button class="btn btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#hiddenWordsCollapse">
+                    🔍 Показати/приховати вже відомі слова ({{ skipped_count }})
+                </button>
+            </div>
+
+            <div class="collapse" id="hiddenWordsCollapse">
+                <div class="card card-body shadow-sm border-info">
+                    <h5 class="card-title text-info">Ці слова вже є у вашому словнику:</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for item in hidden_words %}
+                            <span class="badge bg-light text-dark border">
+                                {{ item.word }} <span class="badge bg-secondary">{{ item.count }}</span>
+                            </span>
+                        {% empty %}
+                            <p class="text-muted">Прихованих слів немає.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="sticky-bottom bg-white p-3 border-top shadow">
+                <button type="submit" class="btn btn-success" id="saveButton" disabled>
+                    Додати обрані в мій словник
+                </button>
+                <a href="{% url 'word_list' %}" class="btn btn-outline-secondary">Скасувати</a>
+            </div>
+        </form>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    const saveButton = document.getElementById('saveButton');
+    const selectAll = document.getElementById('selectAll');
+
     function validateForm() {
+        // Знаходимо актуальні елементи (важливо для пагінації)
+        const checkboxes = document.querySelectorAll('.word-checkbox');
         let anySelected = false;
         let allTranslationsFilled = true;
 
@@ -53,7 +99,8 @@
             if (cb.checked) {
                 anySelected = true;
                 const input = document.querySelector(`input[name="translation_${cb.value}"]`);
-                if (!input.value.trim()) {
+                // Якщо хоча б один вибраний чекбокс не має тексту в інпуті — кнопка не активна
+                if (!input || !input.value.trim()) {
                     allTranslationsFilled = false;
                 }
             }
@@ -62,12 +109,21 @@
         saveButton.disabled = !(anySelected && allTranslationsFilled);
     }
 
-    checkboxes.forEach(cb => cb.addEventListener('change', validateForm));
-    inputs.forEach(input => input.addEventListener('input', validateForm));
+    // Делегування подій (працює краще)
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('word-checkbox') || e.target.id === 'selectAll') {
+            if (e.target.id === 'selectAll') {
+                document.querySelectorAll('.word-checkbox').forEach(cb => cb.checked = e.target.checked);
+            }
+            validateForm();
+        }
+    });
 
-    // Вибрати всі
-    document.getElementById('selectAll').addEventListener('change', function() {
-        checkboxes.forEach(cb => cb.checked = this.checked);
-        validateForm();
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('translation-input')) {
+            validateForm();
+        }
     });
 </script>
+{% endblock %}
+

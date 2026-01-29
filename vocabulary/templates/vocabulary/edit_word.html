@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редагування</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+{% extends 'base.html' %}
+{% block content %}
     {% load widget_tweaks %} <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -14,30 +7,31 @@
                     <div class="card-header bg-primary text-white text-center">
                         <h4 class="mb-0">✏️ Редагувати слово</h4>
                     </div>
-                    <div class="card-body p-4">
-                        <form method="post">
-                            {% csrf_token %}
+                       <div class="card-body p-4">
+                            <h5 class="text-center mb-4">Слово: <span class="text-primary">{{ word.english_word }}</span></h5>
 
-                            {% for field in form %}
+                            <form method="post">
+                                {% csrf_token %}
+
+                                <input type="hidden" name="english_word" value="{{ word.english_word }}">
+
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">{{ field.label }}</label>
-
-                                    {{ field|add_class:"form-control" }}
-
-                                    {% if field.errors %}
-                                        <div class="text-danger small">{{ field.errors }}</div>
-                                    {% endif %}
+                                    <label class="form-label fw-bold">Новий переклад українською</label>
+                                    <input type="text"
+                                           name="ukrainian_translation"
+                                           class="form-control"
+                                           value="{{ word.ukrainian_translation }}"
+                                           required autofocus>
                                 </div>
-                            {% endfor %}
 
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn btn-primary btn-lg">Оновити дані</button>
-                                <a href="{% url 'word_list' %}" class="btn btn-outline-secondary">Повернутися до списку</a>
-                            </div>
-                        </form>
-                    </div>
+                                <div class="d-grid gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg">Зберегти зміни</button>
+                                    <a href="{% url 'word_list' %}" class="btn btn-outline-secondary">Скасувати</a>
+                                </div>
+                            </form>
+                        </div>
                 </div>
             </div>
         </div>
     </div>
-</body>
+{% endblock %}

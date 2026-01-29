@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Моя бібліотека текстів</h2>
+
+<div class="list-group shadow-sm">
+    {% for analysis in analyses %}
+    <div class="list-group-item d-flex justify-content-between align-items-center">
+        <a href="{% url 'view_analysis' analysis.pk %}" class="text-decoration-none flex-grow-1">
+            <h5 class="mb-1 text-dark">{{ analysis.title }}</h5>
+            <small class="text-muted">{{ analysis.created_at|date:"d.m.Y" }} | Слів: {{ analysis.words.count }}</small>
+        </a>
+
+        <form action="{% url 'delete_analysis' analysis.pk %}" method="post" onsubmit="return confirm('Видалити цей текст?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+                🗑️ Видалити
+            </button>
+        </form>
+    </div>
+    {% empty %}
+    <p class="p-4 text-center">Бібліотека порожня.</p>
+    {% endfor %}
+</div>
+{% endblock %}

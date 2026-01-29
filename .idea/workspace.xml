@@ -2,21 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b92faf6f-245a-48f8-957e-fdc5da927d2a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/LL.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vocabulary/forms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/add_word.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/analysis_result.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/analyze_form.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/edit_word.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/login.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/register.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vocabulary/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vocabulary/templates/base.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/analysis_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/view_analysis.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LL/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/LL/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/templates/vocabulary/add_word.html" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/add_word.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/templates/vocabulary/analysis_result.html" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/analysis_result.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/templates/vocabulary/analyze_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/analyze_form.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/templates/vocabulary/edit_word.html" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/edit_word.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/templates/vocabulary/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,9 +33,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 3
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="38tmrdh75awKtGBDWigYSNJZXa7" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -53,14 +52,21 @@
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "git-widget-placeholder": "main",
+    "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\PythonProjects\LL\vocabulary\templates" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="LL" type="Python.DjangoServer" factoryName="Django server">
       <module name="LL" />
@@ -104,6 +110,7 @@
       <option name="presentableId" value="Default" />
       <updated>1769627443301</updated>
       <workItem from="1769627444338" duration="4705000" />
+      <workItem from="1769700400565" duration="6802000" />
     </task>
     <servers />
   </component>
