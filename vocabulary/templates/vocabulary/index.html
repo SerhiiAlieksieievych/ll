@@ -1,66 +1,69 @@
 {% extends 'base.html' %}
-{% block content %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="#">Мій Словник 📚</a>
-        <div class="navbar-text text-white me-3">
-            Вітаю, **{{ user.username }}**!
-        </div>
-        <form action="{% url 'logout' %}" method="post" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-outline-danger btn-sm">Вийти</button>
-        </form>
-    </div>
-</nav>
 
-    <div class="container">
-        <h2>Мої слова</h2>
-        <table class="table table-hover align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>Статус</th>
-                    <th>Слово (En)</th>
-                    <th>Переклад (Ua)</th>
-                    <th>Джерело</th>
-                    <th class="text-center">Дії</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for word in words %}
-                <tr class="{% if word.is_learned %}table-light text-muted{% endif %}">
-                    <td>
-                        <a href="{% url 'toggle_word_status' word.id %}" class="text-decoration-none">
-                            {% if word.is_learned %}
-                                <span class="badge bg-success">Вивчено ✅</span>
-                            {% else %}
-                                <span class="badge bg-warning text-dark">Вчу ⏳</span>
-                            {% endif %}
-                        </a>
-                    </td>
-                    <td><strong>{{ word.english_word }}</strong></td>
-                    <td>{{ word.ukrainian_translation }}</td>
-                    <td>
-                        <small class="text-secondary">{{ word.get_source_display }}</small>
-                    </td>
-                    <td class="text-center">
-                        <div class="btn-group">
-                            <a href="{% url 'edit_word' word.id %}" class="btn btn-sm btn-outline-primary">✏️</a>
-                            <a href="{% url 'delete_word' word.id %}"
-                               class="btn btn-sm btn-outline-danger"
-                               onclick="return confirm('Ви впевнені?')">🗑️</a>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">Ваш словник порожній. Час додати нові слова!</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="d-flex gap-2">
-            <a href="{% url 'add_word' %}" class="btn btn-success">+ Додати слово</a>
-            <a href="{% url 'analyze_text' %}" class="btn btn-outline-primary">🔍 Аналіз тексту</a>
+{% block content %}
+<div class="card shadow-sm mb-4">
+    <div class="card-body d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">Мій словник</h2>
+        <div class="text-end">
+            <span class="fs-5">Всього: <strong>{{ total_count }}</strong></span>
+            <span class="mx-2 text-muted">|</span>
+            <span class="fs-5 text-danger">Невивчені: <strong>{{ unlearned_count }}</strong></span>
         </div>
     </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle bg-white border shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Слово (EN)</th>
+                <th>Переклад (UA)</th>
+                <th>Джерело</th>
+                <th>Статус</th>
+                <th class="text-center">Дія</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for word in words %}
+            {# Рядок буде блідим, якщо слово вивчене #}
+            <tr class="{% if word.is_learned %}table-light text-muted{% endif %}">
+                <td class="fw-bold fs-5">
+                    {% if word.is_learned %}
+                        <del>{{ word.english_word }}</del>
+                    {% else %}
+                        {{ word.english_word }}
+                    {% endif %}
+                </td>
+                <td>{{ word.ukrainian_translation }}</td>
+                <td>
+                    {% if word.source == 'auto' %}
+                        <span class="badge bg-outline-secondary text-dark border">🤖 Авто</span>
+                    {% else %}
+                        <span class="badge bg-outline-primary text-dark border">✍️ Ручна</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if word.is_learned %}
+                        <span class="badge bg-success">Вивчено</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">В процесі</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    <form action="{% url 'toggle_word_learned' word.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm {% if word.is_learned %}btn-outline-secondary{% else %}btn-success shadow-sm{% endif %}">
+                            {% if word.is_learned %}↩️ Повернути{% else %}✅ Вивчив{% endif %}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center p-5 text-muted">Словник поки порожній. Час щось проаналізувати!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

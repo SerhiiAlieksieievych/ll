@@ -21,7 +21,9 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url 'analyze_text' %}">🔍 Аналізатор</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'analysis_list' %}">📚 Бібліотека</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'word_list' %}">📖 Словник</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'word_list' %}">
+                        📖 Словник <span class="badge rounded-pill bg-info text-dark">{{ navbar_word_count }}</span></a>
+                    </li>
                 </ul>
             </div>
         </div>

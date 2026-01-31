@@ -1,60 +1,137 @@
 {% extends 'base.html' %}
+
 {% block content %}
-    <div class="container mt-5">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'analysis_list' %}">Бібліотека</a></li>
-                <li class="breadcrumb-item active">{{ analysis.title }}</li>
-            </ol>
-        </nav>
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'analysis_list' %}">Бібліотека</a></li>
+            <li class="breadcrumb-item active">{{ analysis.title }}</li>
+        </ol>
+    </nav>
+    <h2>{{ analysis.title }}</h2>
+</div>
 
-        <h2 class="mb-4">{{ analysis.title }}</h2>
+<ul class="nav nav-tabs mb-4" id="analysisTab" role="tablist">
+    <li class="nav-item">
+        <button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#textContent" type="button" role="tab">📖 Текст</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="vocab-tab" data-bs-toggle="tab" data-bs-target="#vocabContent" type="button" role="tab">🗂️ Словник тексту</button>
+    </li>
+</ul>
 
-        <ul class="nav nav-tabs" id="analysisTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#textContent" type="button" role="tab">
-                    📖 Оригінальний текст
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="vocab-tab" data-bs-toggle="tab" data-bs-target="#vocabContent" type="button" role="tab">
-                    🗂️ Словник тексту ({{ words.count }})
-                </button>
-            </li>
-        </ul>
-
-        <div class="tab-content border-start border-end border-bottom p-4 bg-white shadow-sm" id="analysisTabContent">
-
-            <div class="tab-pane fade show active" id="textContent" role="tabpanel">
-                <div style="white-space: pre-wrap; line-height: 1.8; font-size: 1.1rem;">
-                    {{ analysis.text }}
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="vocabContent" role="tabpanel">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Слово</th>
-                                <th>Переклад</th>
-                                <th>Статус</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for word in words %}
-                                <tr>
-                                    <td class="fw-bold text-primary">{{ word.english_word }}</td>
-                                    <td>{{ word.ukrainian_translation }}</td>
-                                    <td>
-                                        <span class="badge bg-success-subtle text-success">У словнику</span>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+<div class="tab-content">
+    <div class="tab-pane fade show active p-3 bg-white border rounded shadow-sm" id="textContent" role="tabpanel">
+        <div style="white-space: pre-wrap; line-height: 1.8; font-size: 1.1rem;">{{ analysis.text }}</div>
     </div>
+
+    <div class="tab-pane fade" id="vocabContent" role="tabpanel">
+        <form action="{% url 'save_selected_words' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="analysis_id" value="{{ analysis.id }}">
+
+            <table class="table table-striped shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 50px;"><input type="checkbox" id="selectAll"></th>
+                        <th>Слово (En)</th>
+                        <th>Повторів</th>
+                        <th>Переклад (Ua)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in page_obj %}
+                        <tr>
+                            <td><input type="checkbox" name="selected_words" value="{{ item.word }}" class="word-checkbox"></td>
+                            <td><strong>{{ item.word }}</strong></td>
+                            <td>{{ item.count }}</td>
+                            <td>
+                                <input type="text" name="translation_{{ item.word }}"
+                                       value="{{ item.translation|default:'' }}"
+                                       class="form-control form-control-sm translation-input">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if page_obj.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&tab=vocab">Назад</a></li>
+                    {% endif %}
+                    <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&tab=vocab">Вперед</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            <div class="text-center my-4">
+                <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#hiddenWordsCollapse">
+                    🔍 Відомі слова ({{ skipped_count }})
+                </button>
+            </div>
+
+            <div class="collapse mb-5" id="hiddenWordsCollapse">
+                <div class="card card-body bg-light">
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for item in hidden_words %}
+                            <span class="badge bg-white text-dark border">{{ item.word }} <small class="text-muted">{{ item.count }}</small></span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="sticky-bottom bg-white p-3 border-top shadow text-center">
+                <button type="submit" class="btn btn-success px-5" id="saveButton" disabled>
+                    Додати обрані в мій загальний словник
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    const saveButton = document.getElementById('saveButton');
+    const selectAll = document.getElementById('selectAll');
+
+    function validateForm() {
+        // Знаходимо актуальні елементи (важливо для пагінації)
+        const checkboxes = document.querySelectorAll('.word-checkbox');
+        let anySelected = false;
+        let allTranslationsFilled = true;
+
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                anySelected = true;
+                const input = document.querySelector(`input[name="translation_${cb.value}"]`);
+                // Якщо хоча б один вибраний чекбокс не має тексту в інпуті — кнопка не активна
+                if (!input || !input.value.trim()) {
+                    allTranslationsFilled = false;
+                }
+            }
+        });
+
+        saveButton.disabled = !(anySelected && allTranslationsFilled);
+    }
+
+    // Делегування подій (працює краще)
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('word-checkbox') || e.target.id === 'selectAll') {
+            if (e.target.id === 'selectAll') {
+                document.querySelectorAll('.word-checkbox').forEach(cb => cb.checked = e.target.checked);
+            }
+            validateForm();
+        }
+    });
+
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('translation-input')) {
+            validateForm();
+        }
+    });
+</script>
 {% endblock %}

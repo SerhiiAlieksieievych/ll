@@ -15,4 +15,5 @@ urlpatterns = [
     path('library/<int:pk>/', views.view_analysis, name='view_analysis'),
     path('save-analysis/', views.save_analysis, name='save_analysis'),
     path('delete-analysis/<int:pk>/', views.delete_analysis, name='delete_analysis'),
+    path('word/toggle/<int:pk>/', views.toggle_word_learned, name='toggle_word_learned'),
 ]

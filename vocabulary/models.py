@@ -27,6 +27,10 @@ class Word(models.Model):
         ('auto', 'Аналізатор'),
     ]
 
+    class Meta:
+        # Спочатку показуємо ті, де is_learned=False, потім за датою (нові зверху)
+        ordering = ['is_learned', '-created_at']
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     english_word = models.CharField(max_length=100)
     ukrainian_translation = models.CharField(max_length=100)
@@ -38,3 +42,12 @@ class Word(models.Model):
 
     def __str__(self):
         return f"{self.english_word} - {self.ukrainian_translation}"
+
+class TextWord(models.Model):
+    analysis = models.ForeignKey(TextAnalysis, on_delete=models.CASCADE, related_name='text_vocabulary')
+    word = models.CharField(max_length=100)
+    count = models.IntegerField(default=1)
+    translation = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        ordering = ['-count']

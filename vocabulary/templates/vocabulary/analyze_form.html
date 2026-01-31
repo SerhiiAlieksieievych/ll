@@ -1,23 +1,19 @@
 {% extends 'base.html' %}
+
 {% block content %}
-    <div class="container mt-5">
-        <div class="card shadow">
-            <div class="card-body">
-                <h2>Аналізатор тексту</h2>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label">Назва (напр. Глава 1)</label>
-                        <input type="text" name="title" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Ваш текст англійською</label>
-                        <textarea name="text" class="form-control" rows="8" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Проаналізувати</button>
-                    <a href="{% url 'word_list' %}" class="btn btn-link">Назад до списку</a>
-                </form>
-            </div>
+<div class="card shadow p-4">
+    <h2>Новий аналіз</h2>
+    <form method="post" action="{% url 'analyze_text' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label>Назва</label>
+            <input type="text" name="title" class="form-control" required>
         </div>
-    </div>
+        <div class="mb-3">
+            <label>Текст</label>
+            <textarea name="text" class="form-control" rows="8" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Проаналізувати</button>
+    </form>
+</div>
 {% endblock %}
