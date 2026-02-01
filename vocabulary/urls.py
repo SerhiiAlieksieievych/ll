@@ -1,8 +1,13 @@
-from django.urls import path
+
+from django.urls import path, include
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', views.word_list, name='word_list'),
+    path('', views.home, name='home'),  # Нова головна
+    path('dictionary/', views.word_list, name='word_list'),  # Словник тепер тут
+    path('profile/', views.profile, name='profile'),
     path('register/', views.register, name='register'),
     path('add/', views.add_word, name='add_word'),
     path('analyze/', views.analyze_text, name='analyze_text'),
@@ -16,4 +21,7 @@ urlpatterns = [
     path('save-analysis/', views.save_analysis, name='save_analysis'),
     path('delete-analysis/<int:pk>/', views.delete_analysis, name='delete_analysis'),
     path('word/toggle/<int:pk>/', views.toggle_word_learned, name='toggle_word_learned'),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

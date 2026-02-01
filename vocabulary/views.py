@@ -1,12 +1,12 @@
-from .models import Word, TextAnalysis, TextWord
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
+from .models import Word, TextAnalysis, Profile, TextWord
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.contrib.auth import login, update_session_auth_hash
 from django.contrib import messages
 import re
 from collections import Counter
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .forms import WordForm
+from .forms import WordForm, UserUpdateForm, ProfileUpdateForm
 from django.core.paginator import Paginator
 
 # Перемикач статусу "Вивчено"
@@ -314,3 +314,57 @@ def toggle_word_learned(request, pk):
     word.is_learned = not word.is_learned
     word.save()
     return redirect(request.META.get('HTTP_REFERER', 'word_list'))
+
+
+def home(request):
+    return render(request, 'vocabulary/home.html')
+
+@login_required
+def word_list(request):
+    all_words = Word.objects.filter(user=request.user)
+    total_count = all_words.count()
+    unlearned_count = all_words.filter(is_learned=False).count()
+
+    # Змінюємо шаблон з index.html на word_list.html
+    return render(request, 'vocabulary/word_list.html', {
+        'words': all_words,
+        'total_count': total_count,
+        'unlearned_count': unlearned_count,
+    })
+
+@login_required
+def profile(request):
+    # Створюємо профіль, якщо його раптом немає
+    profile_obj, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            return redirect('profile')
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
+
+    # Статистика
+    total_words = Word.objects.filter(user=request.user).count()
+    learned_words = Word.objects.filter(user=request.user, is_learned=True).count()
+
+    # Останні дані
+    last_texts = TextAnalysis.objects.filter(user=request.user).order_by('-created_at')[:3]
+    learning_words = Word.objects.filter(user=request.user, is_learned=False).order_by('-created_at')[:5]
+
+    context = {
+        'u_form': u_form,
+        'p_form': p_form,
+        'text_count': TextAnalysis.objects.filter(user=request.user).count(),
+        'total_words': total_words,
+        'learned_words': learned_words,
+        'progress': round((learned_words / total_words * 100) if total_words > 0 else 0),
+        'last_texts': last_texts,
+        'learning_words': learning_words,
+    }
+    return render(request, 'vocabulary/profile.html', context)

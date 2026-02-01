@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b92faf6f-245a-48f8-957e-fdc5da927d2a" name="Changes" comment="Ability to save analyzed texts was added">
-      <change afterPath="$PROJECT_DIR$/vocabulary/context_processors.py" afterDir="false" />
+    <list default="true" id="b92faf6f-245a-48f8-957e-fdc5da927d2a" name="Changes" comment="Bugs were fixed">
+      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/home.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/password_change_custom.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/profile.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LL/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/LL/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LL/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/LL/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vocabulary/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vocabulary/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vocabulary/templates/vocabulary/analyze_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/analyze_form.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vocabulary/templates/vocabulary/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vocabulary/templates/vocabulary/view_analysis.html" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/view_analysis.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/templates/vocabulary/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/templates/vocabulary/word_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocabulary/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vocabulary/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/vocabulary/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -20,8 +23,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -71,6 +74,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\PythonProjects\LL\vocabulary\templates\vocabulary" />
       <recent name="D:\PythonProjects\LL\vocabulary\templates" />
     </key>
   </component>
@@ -119,6 +123,8 @@
       <workItem from="1769627444338" duration="4705000" />
       <workItem from="1769700400565" duration="6901000" />
       <workItem from="1769888633208" duration="3181000" />
+      <workItem from="1769892524778" duration="172000" />
+      <workItem from="1769971838036" duration="4209000" />
     </task>
     <task id="LOCAL-00001" summary="Ability to save analyzed texts was added">
       <option name="closed" value="true" />
@@ -128,7 +134,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769707313320</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Bugs were fixed">
+      <option name="closed" value="true" />
+      <created>1769892586156</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1769892586156</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -136,6 +150,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Ability to save analyzed texts was added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Ability to save analyzed texts was added" />
+    <MESSAGE value="Bugs were fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bugs were fixed" />
   </component>
 </project>

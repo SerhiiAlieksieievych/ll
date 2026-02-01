@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3 shadow-sm border">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold text-primary">🇬🇧 VocabBuilder AI</h1>
+        <p class="col-md-8 fs-4">Це ваш персональний помічник для вивчення англійської мови. Аналізуйте тексти, витягуйте складні слова та створюйте власний інтерактивний словник.</p>
+        <hr class="my-4">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <a href="{% url 'analyze_text' %}" class="btn btn-primary btn-lg px-4 me-md-2">Почати аналіз</a>
+            <a href="{% url 'word_list' %}" class="btn btn-outline-secondary btn-lg px-4">Мій словник</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

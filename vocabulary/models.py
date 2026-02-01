@@ -51,3 +51,20 @@ class TextWord(models.Model):
 
     class Meta:
         ordering = ['-count']
+
+class Profile(models.Model):
+    LEVEL_CHOICES = [
+        ('beginner', 'Beginner (A1)'),
+        ('elementary', 'Elementary (A2)'),
+        ('intermediate', 'Intermediate (B1)'),
+        ('upper_intermediate', 'Upper Intermediate (B2)'),
+        ('advanced', 'Advanced (C1)'),
+        ('proficiency', 'Proficiency (C2)'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    english_level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default='beginner')
+
+    def __str__(self):
+        return f"Profile for {self.user.username}"
