@@ -197,22 +197,6 @@ def register(request):
 
     return render(request, 'vocabulary/register.html', {'form': form})
 
-
-@login_required
-def word_list(request):
-    all_words = Word.objects.filter(user=request.user)
-
-    total_count = all_words.count()
-    # Рахуємо тільки ті, де is_learned=False
-    unlearned_count = all_words.filter(is_learned=False).count()
-
-    return render(request, 'vocabulary/index.html', {
-        'words': all_words,
-        'total_count': total_count,
-        'unlearned_count': unlearned_count,
-    })
-
-
 @login_required
 def save_selected_words(request):
     if request.method == 'POST':
@@ -247,21 +231,6 @@ def analysis_list(request):
     # Отримуємо всі аналізи користувача, від нових до старих
     analyses = TextAnalysis.objects.filter(user=request.user).order_order_by('-created_at')
     return render(request, 'vocabulary/analysis_list.html', {'analyses': analyses})
-
-
-@login_required
-def view_analysis(request, pk):
-    # Отримуємо конкретний аналіз
-    analysis = get_object_or_404(TextAnalysis, pk=pk, user=request.user)
-
-    # Отримуємо всі слова, які ПРИВ'ЯЗАНІ саме до цього тексту
-    # Це і є наш "словник тексту"
-    words = analysis.words.all().order_by('english_word')
-
-    return render(request, 'vocabulary/view_analysis.html', {
-        'analysis': analysis,
-        'words': words
-    })
 
 @login_required
 def analysis_list(request):
@@ -319,18 +288,28 @@ def toggle_word_learned(request, pk):
 def home(request):
     return render(request, 'vocabulary/home.html')
 
-@login_required
+
+from django.core.paginator import Paginator
+
+
 def word_list(request):
-    all_words = Word.objects.filter(user=request.user)
+    all_words = Word.objects.filter(user=request.user).order_by('-created_at')
+
+    # Рахуємо КІЛЬКІСТЬ до пагінації
     total_count = all_words.count()
     unlearned_count = all_words.filter(is_learned=False).count()
 
-    # Змінюємо шаблон з index.html на word_list.html
-    return render(request, 'vocabulary/word_list.html', {
-        'words': all_words,
-        'total_count': total_count,
-        'unlearned_count': unlearned_count,
-    })
+    # Створюємо пагінацію (по 20 слів)
+    paginator = Paginator(all_words, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'total_count': total_count,  # Передаємо в шаблон
+        'unlearned_count': unlearned_count,  # Передаємо в шаблон
+    }
+    return render(request, 'vocabulary/word_list.html', context)
 
 @login_required
 def profile(request):
@@ -355,7 +334,7 @@ def profile(request):
 
     # Останні дані
     last_texts = TextAnalysis.objects.filter(user=request.user).order_by('-created_at')[:3]
-    learning_words = Word.objects.filter(user=request.user, is_learned=False).order_by('-created_at')[:5]
+    learning_words = Word.objects.filter(user=request.user, is_learned=False).order_by('-created_at')
 
     context = {
         'u_form': u_form,

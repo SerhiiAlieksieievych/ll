@@ -24,8 +24,8 @@
             </tr>
         </thead>
         <tbody>
-            {% for word in words %}
-            {# Рядок буде блідим, якщо слово вивчене #}
+            {# Змінюємо words на page_obj #}
+            {% for word in page_obj %}
             <tr class="{% if word.is_learned %}table-light text-muted{% endif %}">
                 <td class="fw-bold fs-5">
                     {% if word.is_learned %}
@@ -66,4 +66,52 @@
         </tbody>
     </table>
 </div>
+
+{# Блок пагінації #}
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+
+        {# Кнопка "Назад" #}
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link shadow-sm" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link text-muted">Назад</span>
+            </li>
+        {% endif %}
+
+        {# Номери сторінок #}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link shadow-sm border-primary">{{ num }}</span>
+                </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link shadow-sm text-dark" href="?page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {# Кнопка "Вперед" #}
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link shadow-sm" href="?page={{ page_obj.next_page_number }}">Вперед</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link text-muted">Вперед</span>
+            </li>
+        {% endif %}
+
+    </ul>
+</nav>
+<div class="text-center text-muted small mt-2">
+    Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}
+</div>
+{% endif %}
+
 {% endblock %}

@@ -1,19 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
-{% if messages %}
-{% for message in messages %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-{% endfor %}
-{% endif %}
-<div class="row">
-    <div class="col-md-4">
-        {% load widget_tweaks %}
+{% load widget_tweaks %}
 
+<style>
+    /* Анімація появи всієї сторінки після завантаження/збереження */
+    .page-load-fade {
+        animation: fadeInPage 0.5s ease-out;
+    }
+
+    @keyframes fadeInPage {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Контейнер для стабілізації висоти */
+    .profile-card-container {
+        position: relative;
+        min-height: 380px;
+    }
+
+    /* Базовий стан для анімації блоків */
+    .fade-section {
+        transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* Стан прихованого блоку */
+    .fade-hidden {
+        opacity: 0;
+        transform: scale(0.98);
+        display: none !important;
+    }
+
+    /* Стиль для кнопки, що завантажується */
+    .btn-loading {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+</style>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show page-load-fade" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row page-load-fade">
+    <div class="col-md-4">
         <div class="card shadow-sm mb-4 border-0">
-            <div class="card-body text-center">
+            <div class="card-body text-center profile-card-container">
+
                 <div class="mb-3">
                     {% if user.profile.avatar %}
                         <img id="avatar-preview" src="{{ user.profile.avatar.url }}" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
@@ -22,15 +62,15 @@
                     {% endif %}
                 </div>
 
-                <div id="profile-view-section">
+                <div id="profile-view-section" class="fade-section">
                     <h4 class="mb-1">{{ user.username }}</h4>
                     <p class="text-muted small mb-2">{{ user.email }}</p>
                     <span class="badge bg-light text-dark border mb-3">{{ user.profile.get_english_level_display }}</span>
                     <button onclick="toggleEdit()" class="btn btn-sm btn-primary w-100">Редагувати профіль</button>
                 </div>
 
-                <div id="profile-edit-section" style="display: none;">
-                    <form method="post" enctype="multipart/form-data">
+                <div id="profile-edit-section" class="fade-section fade-hidden" style="opacity: 0;">
+                    <form method="post" enctype="multipart/form-data" id="profile-form">
                         {% csrf_token %}
                         <div class="text-start">
                             <div class="mb-2">
@@ -66,43 +106,13 @@
                         </div>
 
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-sm btn-success flex-grow-1">Зберегти</button>
+                            <button type="submit" class="btn btn-sm btn-success flex-grow-1" id="save-btn">Зберегти</button>
                             <button type="button" onclick="cancelEdit()" class="btn btn-sm btn-outline-secondary flex-grow-1">Скасувати</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-
-        <script>
-            const avatarInput = document.getElementById('avatar-input');
-            const avatarPreview = document.getElementById('avatar-preview');
-            const originalAvatarSrc = avatarPreview.src;
-
-            // Миттєве прев'ю при виборі файлу
-            avatarInput.onchange = function() {
-                const [file] = avatarInput.files;
-                if (file) {
-                    avatarPreview.src = URL.createObjectURL(file);
-                }
-            };
-
-            function toggleEdit() {
-                document.getElementById('profile-view-section').style.display = 'none';
-                document.getElementById('profile-edit-section').style.display = 'block';
-            }
-
-            function cancelEdit() {
-                document.getElementById('profile-view-section').style.display = 'block';
-                document.getElementById('profile-edit-section').style.display = 'none';
-                // Скидаємо фото та інпут
-                avatarPreview.src = originalAvatarSrc;
-                avatarInput.value = "";
-                const clearCheck = document.getElementById('avatar-clear_id');
-                if (clearCheck) clearCheck.checked = false;
-            }
-        </script>
-
     </div>
 
     <div class="col-md-8">
@@ -123,7 +133,7 @@
             {% endfor %}
         </ul>
 
-        <h4 class="mb-3">🧠 Слова, що наразі вивчаються</h4>
+        <h4 class="mb-3">🧠 Слова, що вивчаються</h4>
         <div class="d-flex flex-wrap gap-2 mb-4">
             {% for word in learning_words %}
                 <span class="badge bg-warning text-dark p-2 fs-6 shadow-sm">
@@ -135,18 +145,69 @@
         </div>
     </div>
 </div>
-    <script>
-    function toggleEdit() {
-        const viewSection = document.getElementById('profile-view-section');
-        const editSection = document.getElementById('profile-edit-section');
 
-        if (viewSection.style.display === 'none') {
-            viewSection.style.display = 'block';
-            editSection.style.display = 'none';
-        } else {
-            viewSection.style.display = 'none';
-            editSection.style.display = 'block';
+<script>
+    const avatarInput = document.getElementById('avatar-input');
+    const avatarPreview = document.getElementById('avatar-preview');
+    const originalAvatarSrc = avatarPreview.src;
+    const saveBtn = document.getElementById('save-btn');
+    const profileForm = document.getElementById('profile-form');
+
+    // Прев'ю фото
+    avatarInput.onchange = function() {
+        const [file] = avatarInput.files;
+        if (file) {
+            avatarPreview.src = URL.createObjectURL(file);
         }
+    };
+
+    // Плавне перемикання на редагування
+    function toggleEdit() {
+        const view = document.getElementById('profile-view-section');
+        const edit = document.getElementById('profile-edit-section');
+
+        view.style.opacity = '0';
+        view.style.transform = 'scale(0.98)';
+
+        setTimeout(() => {
+            view.classList.add('fade-hidden');
+            edit.classList.remove('fade-hidden');
+            setTimeout(() => {
+                edit.style.opacity = '1';
+                edit.style.transform = 'scale(1)';
+            }, 10);
+        }, 200);
     }
+
+    // Скасування редагування
+    function cancelEdit() {
+        const view = document.getElementById('profile-view-section');
+        const edit = document.getElementById('profile-edit-section');
+
+        edit.style.opacity = '0';
+        edit.style.transform = 'scale(0.98)';
+
+        setTimeout(() => {
+            edit.classList.add('fade-hidden');
+            view.classList.remove('fade-hidden');
+            setTimeout(() => {
+                view.style.opacity = '1';
+                view.style.transform = 'scale(1)';
+            }, 10);
+
+            // Скидання змін
+            avatarPreview.src = originalAvatarSrc;
+            avatarInput.value = "";
+            const clearCheck = document.getElementById('avatar-clear_id');
+            if (clearCheck) clearCheck.checked = false;
+        }, 200);
+    }
+
+    // Обробка натискання "Зберегти"
+    profileForm.onsubmit = function() {
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Зберігаю...';
+        saveBtn.classList.add('btn-loading');
+    };
 </script>
+
 {% endblock %}
